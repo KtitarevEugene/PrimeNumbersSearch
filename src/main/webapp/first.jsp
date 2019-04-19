@@ -1,8 +1,10 @@
+<%@ page isELIgnored="false" %>
+
 <html>
 <head>
 <title>Page</title>
 </head>
 <body>
-<h2><%= request.getAttribute("string") %></h2>
+<h2>${string}</h2>
 </body>
 </html>
