@@ -10,13 +10,13 @@
   </error-page>
 
   <servlet>
-    <servlet-name>FirstServlet</servlet-name>
-    <servlet-class>servlet.FirstServlet</servlet-class>
+    <servlet-name>JobServlet</servlet-name>
+    <servlet-class>servlet.EnqueueJobServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>FirstServlet</servlet-name>
-    <url-pattern>/start</url-pattern>
+    <servlet-name>JobServlet</servlet-name>
+    <url-pattern>/form</url-pattern>
   </servlet-mapping>
 
 </web-app>
