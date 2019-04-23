@@ -17,7 +17,7 @@
             if (attribute instanceof String) {
                 String jmsId = (String) attribute;
                 if (!jmsId.isEmpty()) { %>
-                    <a href="#"><%= jmsId %></a>
+                    <a href="/FirstServlet/result?<%= Constants.JMS_ID_PARAM %>=<%= jmsId %>">Open Result</a>
             <% } %>
         <% } %>
 
