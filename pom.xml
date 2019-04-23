@@ -5,11 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>net.servlets</groupId>
-  <artifactId>FirstServlet</artifactId>
+  <artifactId>PrimeNumbersSearch</artifactId>
   <version>0.1</version>
   <packaging>war</packaging>
 
-  <name>FirstServlet Maven Webapp</name>
+  <name>PrimeNumbersSearch Maven Webapp</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
@@ -42,7 +42,7 @@
   </dependencies>
 
   <build>
-    <finalName>FirstServlet</finalName>
+    <finalName>PrimeNumbersSearch</finalName>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <plugin>

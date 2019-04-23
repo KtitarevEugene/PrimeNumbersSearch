@@ -1,4 +1,5 @@
 <%@ page isELIgnored="false" %>
+<%@ page import="web_app.common.Constants" %>
 
 <html>
     <head>
@@ -11,5 +12,14 @@
             <input class="numeric" type="text" name="${fieldName}" />
             <input type="submit" value="Send">
         </form>
+        <%
+            Object attribute = request.getAttribute(Constants.JMS_ID_ATTRIBUTE_NAME);
+            if (attribute instanceof String) {
+                String jmsId = (String) attribute;
+                if (!jmsId.isEmpty()) { %>
+                    <a href="#"><%= jmsId %></a>
+            <% } %>
+        <% } %>
+
     </body>
 </html>

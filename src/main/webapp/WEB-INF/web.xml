@@ -11,7 +11,7 @@
 
   <servlet>
     <servlet-name>JobServlet</servlet-name>
-    <servlet-class>servlet.EnqueueJobServlet</servlet-class>
+    <servlet-class>web_app.servlets.EnqueueJobServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
