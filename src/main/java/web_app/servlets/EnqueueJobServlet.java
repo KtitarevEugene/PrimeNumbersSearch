@@ -1,7 +1,10 @@
 package web_app.servlets;
 
 import web_app.common.Constants;
+import web_app.common.Utils;
+import web_app.db.MySQLConnector;
 import web_app.messaging.JMSConnection;
+import web_app.messaging.JMSMessage;
 import web_app.messaging.JMSProducer;
 import web_app.messaging.JMSSession;
 
@@ -35,10 +38,12 @@ public class EnqueueJobServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             String value = req.getParameter(Constants.VALUE_FIELD);
-            if (!value.isEmpty()) {
-                String jmsId = sendResultMessage(req.getParameter(Constants.VALUE_FIELD));
+            if (value != null && Utils.isInteger(value)) {
+                int valueId = insertValueToSearch(value);
 
-                req.setAttribute(Constants.JMS_ID_ATTRIBUTE_NAME, jmsId);
+                sendResultMessage(valueId);
+
+                req.setAttribute(Constants.VALUE_ID_ATTRIBUTE_NAME, valueId);
             }
 
             forwardToForm(req, resp);
@@ -54,11 +59,25 @@ public class EnqueueJobServlet extends HttpServlet {
         getServletContext().getRequestDispatcher("/form.jsp").forward(req, resp);
     }
 
-    private String sendResultMessage(String resultMessage) throws JMSException {
+    private String sendResultMessage(int valueId) throws JMSException {
         try (JMSSession session = new JMSSession(connection)) {
             try (JMSProducer producer = new JMSProducer(session, Constants.QUEUE_NAME)) {
-                return producer.send(session.createMessage(resultMessage));
+                JMSMessage message = session.createMessage(String.valueOf(valueId));
+
+                return producer.send(message);
             }
         }
+    }
+
+    private int insertValueToSearch(String value) {
+        int valueId = -1;
+        try (MySQLConnector connector = new MySQLConnector(Constants.DB_USER, Constants.DB_PASSWORD)) {
+            valueId = connector.insertRequestedValue(value);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return valueId;
     }
 }

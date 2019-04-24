@@ -13,11 +13,11 @@
             <input type="submit" value="Send">
         </form>
         <%
-            Object attribute = request.getAttribute(Constants.JMS_ID_ATTRIBUTE_NAME);
-            if (attribute instanceof String) {
-                String jmsId = (String) attribute;
-                if (!jmsId.isEmpty()) { %>
-                    <a href="/PrimeNumbersSearch/result?<%= Constants.JMS_ID_PARAM %>=<%= jmsId %>">Open Result</a>
+            Object attribute = request.getAttribute(Constants.VALUE_ID_ATTRIBUTE_NAME);
+            if (attribute instanceof Integer) {
+                Integer valueId = (Integer) attribute;
+                if (valueId != -1) { %>
+                    <a href="/PrimeNumbersSearch/result?<%= Constants.VALUE_ID_PARAM %>=<%= valueId %>">Open Result</a>
             <% } %>
         <% } %>
 
