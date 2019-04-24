@@ -8,7 +8,7 @@
     </head>
     <body>
         <h2>Enter number:</h2>
-        <form action="/FirstServlet/form" method="post">
+        <form action="/PrimeNumbersSearch/form" method="post">
             <input class="numeric" type="text" name="${fieldName}" />
             <input type="submit" value="Send">
         </form>
@@ -17,7 +17,7 @@
             if (attribute instanceof String) {
                 String jmsId = (String) attribute;
                 if (!jmsId.isEmpty()) { %>
-                    <a href="/FirstServlet/result?<%= Constants.JMS_ID_PARAM %>=<%= jmsId %>">Open Result</a>
+                    <a href="/PrimeNumbersSearch/result?<%= Constants.JMS_ID_PARAM %>=<%= jmsId %>">Open Result</a>
             <% } %>
         <% } %>
 
