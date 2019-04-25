@@ -21,7 +21,11 @@ public class JobResultServlet extends HttpServlet {
             if (model != null) {
                 setRequestAttributes(req, model);
                 forwardToResultPage(req, resp);
+            } else {
+                forwardToErrorPage(req, resp);
             }
+        } else {
+            forwardToErrorPage(req, resp);
         }
     }
 
@@ -37,12 +41,15 @@ public class JobResultServlet extends HttpServlet {
 
     private void setRequestAttributes(HttpServletRequest request, ResultModel model) {
         request.setAttribute(Constants.REQUESTED_VALUE_ATTRIBUTE_NAME, model.getValue());
-        request.setAttribute(Constants.VALUE_RESULT_ATTRIBUTE_NAME,
-                Utils.numbersListToString(model.getPrimeNumbers(), ", "));
+        request.setAttribute(Constants.VALUE_RESULT_ATTRIBUTE_NAME, model.getPrimeNumbers());
     }
 
     private void forwardToResultPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         getServletContext().getRequestDispatcher("/result.jsp").forward(request, response);
+    }
+
+    private void forwardToErrorPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        getServletContext().getRequestDispatcher("/error.html").forward(request, response);
     }
 
 }
