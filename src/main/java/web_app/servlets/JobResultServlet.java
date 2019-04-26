@@ -2,8 +2,10 @@ package web_app.servlets;
 
 import web_app.common.Constants;
 import web_app.common.Utils;
-import web_app.db.MySQLConnector;
-import web_app.db.models.ResultModel;
+import web_app.repository.DataRepository;
+import web_app.repository.cache.cache_managers.MemcachedManager;
+import web_app.repository.db.db_managers.MySQLConnectorManager;
+import web_app.repository.db.db_models.ResultModel;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +14,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class JobResultServlet extends HttpServlet {
+
+    private DataRepository dataRepository;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+
+        dataRepository = new DataRepository(
+                new MySQLConnectorManager(Constants.DB_USER, Constants.DB_PASSWORD),
+                new MemcachedManager("localhost", 11211));
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -30,13 +43,7 @@ public class JobResultServlet extends HttpServlet {
     }
 
     private ResultModel getResultModelById(int id) {
-        try (MySQLConnector connector = new MySQLConnector(Constants.DB_USER, Constants.DB_PASSWORD)) {
-            return connector.getResultById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return dataRepository.getResultById(id);
     }
 
     private void setRequestAttributes(HttpServletRequest request, ResultModel model) {
