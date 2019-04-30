@@ -1,21 +1,56 @@
 package web_app.repository.db.db_managers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import web_app.common.Constants;
 import web_app.repository.db.db_connectors.Connector;
 import web_app.repository.db.db_connectors.MySQLConnector;
 
+import java.util.Properties;
+
 public class MySQLConnectorManager implements ConnectorManager {
 
-    private String userName;
-    private String password;
+    private final Logger logger = LoggerFactory.getLogger(MySQLConnectorManager.class);
 
-    public MySQLConnectorManager(String userName, String password) {
+    private String url = "jdbc:mysql://localhost:3306/results";
+    private String userName = "root";
+    private String password = "root";
 
+    public MySQLConnectorManager(Properties properties) {
+
+        String connectionStr = getProperty(properties, Constants.JDBC_URL);
+        if (connectionStr != null) {
+            url = connectionStr;
+        }
+
+        String user = getProperty(properties, Constants.JDBC_USER);
+        if (user != null) {
+            userName = user;
+        }
+
+        String pass = getProperty(properties, Constants.JDBC_PASSWORD);
+        if (pass != null) {
+            password = pass;
+        }
+    }
+
+    public MySQLConnectorManager(String url, String userName, String password) {
+
+        this.url = url;
         this.userName = userName;
         this.password = password;
     }
 
+    private String getProperty(Properties properties, String name) {
+        String value = properties.getProperty(name);
+        if (value == null) {
+            logger.warn("Missing config property '{}'. Used default value", name);
+        }
+
+        return value;
+    }
     @Override
     public Connector getConnector() {
-        return new MySQLConnector(userName, password);
+        return new MySQLConnector(url, userName, password);
     }
 }

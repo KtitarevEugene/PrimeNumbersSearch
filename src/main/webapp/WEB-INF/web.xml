@@ -5,6 +5,11 @@
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
 
+  <context-param>
+    <param-name>ENV_VAR_NAME</param-name>
+    <param-value>WebCfgPath</param-value>
+  </context-param>
+
   <error-page>
     <location>/error.html</location>
   </error-page>
