@@ -34,6 +34,8 @@ public class JMSConnection implements AutoCloseable {
     public JMSConnection(String brokerUrl, String clientName) throws JMSException {
         this.brokerUrl = brokerUrl;
         this.clientName = clientName;
+
+        init();
     }
 
     private void init() throws JMSException {
