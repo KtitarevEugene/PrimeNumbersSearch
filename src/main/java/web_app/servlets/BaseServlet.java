@@ -27,7 +27,8 @@ public class BaseServlet extends HttpServlet {
     private static final String[] jdbcParams = new String[] {
             Constants.JDBC_URL,
             Constants.JDBC_USER,
-            Constants.JDBC_PASSWORD
+            Constants.JDBC_PASSWORD,
+            Constants.JDBC_POOL_SIZE
     };
 
     private static final String[] activeMqParams = new String[] {

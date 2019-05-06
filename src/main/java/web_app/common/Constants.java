@@ -8,6 +8,7 @@ public class Constants {
     public static final String JDBC_URL = "url";
     public static final String JDBC_USER = "user";
     public static final String JDBC_PASSWORD = "password";
+    public static final String JDBC_POOL_SIZE = "pool_size";
 
     public static final String ACTIVE_MQ_CFG = "acivemq_cfg";
     public static final String ACTIVE_MQ_BROKER_URL = "broker_url";
