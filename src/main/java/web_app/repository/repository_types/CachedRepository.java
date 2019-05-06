@@ -1,5 +1,6 @@
 package web_app.repository.repository_types;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web_app.repository.cache.cache_connectors.CacheConnector;
@@ -54,8 +55,10 @@ public class CachedRepository implements Repository {
                 logger.info("Getting result from db...");
                 resultModels = retrieveFromDatabase(value);
 
-                logger.info("Done. Saving result to cache.");
-                putModelsListToCache(value, resultModels);
+                if (!resultModels.isEmpty()) {
+                    logger.info("Done. Saving result to cache.");
+                    putModelsListToCache(value, resultModels);
+                }
             } catch (NoDataInDBException ex) {
                 logger.warn("Result for value {} not found", value);
             } catch (CacheConnectionException ex ) {
@@ -106,6 +109,7 @@ public class CachedRepository implements Repository {
         return resultModel;
     }
 
+    @NotNull
     private ResultModel retrieveFromDatabase(int id) throws NoDataInDBException {
         try (Connector connector = connectorManager.getConnector()) {
             ResultModel model = connector.getResultById(id);
@@ -119,6 +123,7 @@ public class CachedRepository implements Repository {
         throw new NoDataInDBException();
     }
 
+    @NotNull
     private List<ResultModel> retrieveFromDatabase(String value) throws NoDataInDBException {
         try (Connector connector = connectorManager.getConnector()) {
             List<ResultModel> resultModels = connector.getResultByValue(value);
@@ -133,6 +138,7 @@ public class CachedRepository implements Repository {
         throw new NoDataInDBException();
     }
 
+    @NotNull
     private List<ResultModel> retrieveFromCache(String value) throws CacheConnectionException, NoDataInCacheException {
         try (CacheConnector cacheConnector = cacheManager.getCacheConnector()) {
             List<ResultModel> resultModels = cacheConnector.getResultModelList(String.format(VALUE_KEY, value));
@@ -150,6 +156,7 @@ public class CachedRepository implements Repository {
         throw new NoDataInCacheException();
     }
 
+    @NotNull
     private ResultModel retrieveFromCache(int id) throws NoDataInCacheException, CacheConnectionException {
         try (CacheConnector cacheConnector = cacheManager.getCacheConnector()) {
             ResultModel model = cacheConnector.getResultModel(id);
