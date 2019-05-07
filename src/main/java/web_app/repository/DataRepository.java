@@ -19,7 +19,7 @@ public class DataRepository implements Repository {
         this.repositoryType = repositoryType;
     }
 
-    public void setRepositoryType(Repository repositoryType) {
+    public void setRepositoryType(@NotNull Repository repositoryType) {
         this.repositoryType = repositoryType;
     }
 

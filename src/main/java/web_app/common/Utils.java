@@ -11,7 +11,7 @@ public class Utils {
 
     private Utils() {}
 
-    public static boolean isInteger(String string) {
+    public static boolean isInteger(@NotNull String string) {
         return string.matches("^\\d+$");
     }
 
@@ -21,7 +21,7 @@ public class Utils {
                 .reduce("", (str1, str2) -> str1.isEmpty() ? str2 : str1 + separator + str2);
     }
 
-    public static void addConfigParams(@NotNull Ini config, String sectionName, @NotNull String[] params, Properties properties) {
+    public static void addConfigParams(@NotNull Ini config, String sectionName, @NotNull String[] params, @NotNull Properties properties) {
         Profile.Section section = config.get(sectionName);
 
         for (String param : params) {
@@ -30,6 +30,17 @@ public class Utils {
             if (val != null) {
                 properties.setProperty(param, val);
             }
+        }
+    }
+
+    public static void addAllConfigParamsFromSection(@NotNull Ini config,
+                                                     @NotNull String sectionName,
+                                                     @NotNull Properties properties) {
+
+        Profile.Section section = config.get(sectionName);
+
+        for (String key : section.keySet()) {
+            properties.setProperty(key, section.get(key));
         }
     }
 }
