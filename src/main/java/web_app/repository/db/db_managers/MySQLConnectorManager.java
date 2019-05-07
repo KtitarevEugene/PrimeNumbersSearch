@@ -90,8 +90,10 @@ public class MySQLConnectorManager implements ConnectorManager {
             return this;
         }
 
-        public Builder setConnectionTestQuery(@NotNull String query) {
-            config.setConnectionTestQuery(query);
+        public Builder setConnectionTestQuery(String query) {
+            if (query != null) {
+                config.setConnectionTestQuery(query);
+            }
             return this;
         }
 

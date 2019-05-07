@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web_app.repository.db.db_models.ResultModel;
@@ -19,12 +21,13 @@ public class MySQLConnector implements Connector {
 
     private Connection connection;
 
+    @Contract(pure = true)
     public MySQLConnector(Connection connection) {
         this.connection = connection;
     }
 
     @Override
-    public boolean insertResultModel(ResultModel model) {
+    public boolean insertResultModel(@NotNull ResultModel model) {
         try (PreparedStatement statement =
                      connection.prepareStatement("INSERT INTO `results`.`prime_numbers` " +
                              "(`value`, `results`) VALUES (?, ?);")) {
