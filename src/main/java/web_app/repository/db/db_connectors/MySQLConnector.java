@@ -2,9 +2,6 @@ package web_app.repository.db.db_connectors;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +18,8 @@ public class MySQLConnector implements Connector {
 
     private Connection connection;
 
-    @Contract(pure = true)
-    public MySQLConnector(Connection connection) {
+    @Override
+    public void setConnection(Connection connection) {
         this.connection = connection;
     }
 

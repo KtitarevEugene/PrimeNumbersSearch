@@ -2,9 +2,12 @@ package web_app.repository.db.db_connectors;
 
 import web_app.repository.db.db_models.ResultModel;
 
+import java.sql.Connection;
 import java.util.List;
 
 public interface Connector extends AutoCloseable {
+    void setConnection(Connection connection);
+
     boolean insertResultModel(ResultModel model);
     int insertRequestedValue (String value);
     List<ResultModel> getResultByValue (String value);

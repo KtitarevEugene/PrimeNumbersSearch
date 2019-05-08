@@ -31,14 +31,14 @@ public class CachedRepository implements Repository {
 
     @Override
     public boolean insertResultModel(ResultModel model) throws Exception {
-        try (Connector connector = connectorManager.getConnector()) {
+        try (Connector connector = connectorManager.establishConnection()) {
             return connector.insertResultModel(model);
         }
     }
 
     @Override
     public int insertRequestedValue (String value) throws Exception {
-        try (Connector connector = connectorManager.getConnector()) {
+        try (Connector connector = connectorManager.establishConnection()) {
             return connector.insertRequestedValue(value);
         }
     }
@@ -111,7 +111,7 @@ public class CachedRepository implements Repository {
 
     @NotNull
     private ResultModel retrieveFromDatabase(int id) throws NoDataInDBException {
-        try (Connector connector = connectorManager.getConnector()) {
+        try (Connector connector = connectorManager.establishConnection()) {
             ResultModel model = connector.getResultById(id);
             if (model != null) {
                 return model;
@@ -125,7 +125,7 @@ public class CachedRepository implements Repository {
 
     @NotNull
     private List<ResultModel> retrieveFromDatabase(String value) throws NoDataInDBException {
-        try (Connector connector = connectorManager.getConnector()) {
+        try (Connector connector = connectorManager.establishConnection()) {
             List<ResultModel> resultModels = connector.getResultByValue(value);
 
             if (resultModels != null) {

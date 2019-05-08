@@ -6,14 +6,13 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web_app.repository.db.db_connectors.Connector;
-import web_app.repository.db.db_connectors.MySQLConnector;
 
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class MySQLConnectorManager implements ConnectorManager {
+public class PooledConnectorManager implements ConnectorManager {
 
-    private final Logger logger = LoggerFactory.getLogger(MySQLConnectorManager.class);
+    private final Logger logger = LoggerFactory.getLogger(PooledConnectorManager.class);
 
     public static class Builder implements ManagerBuilder {
 
@@ -21,14 +20,12 @@ public class MySQLConnectorManager implements ConnectorManager {
         private static final String PREP_STMTS_CACHE_SIZE = "prepStmtCacheSize";
         private static final String PREP_STMTS_CACHE_LIMIT = "prepStmtCacheSqlLimit";
 
+        private Connector connector;
         private HikariConfig config;
 
-        public Builder() {
+        public Builder(Connector connector) {
+            this.connector = connector;
             config = new HikariConfig();
-        }
-
-        public Builder(@NotNull Properties properties) {
-            config = new HikariConfig(properties);
         }
 
         public Builder setUrl(@NotNull String url) {
@@ -112,25 +109,28 @@ public class MySQLConnectorManager implements ConnectorManager {
             return this;
         }
 
-        public Builder addSourceProperty(String propertyName, String propetryValue) {
-            config.addDataSourceProperty(propertyName, propetryValue);
+        public Builder addSourceProperty(String propertyName, String propertyValue) {
+            config.addDataSourceProperty(propertyName, propertyValue);
             return this;
         }
 
         @Override
         public ConnectorManager build() {
-            return new MySQLConnectorManager(config);
+            return new PooledConnectorManager(connector, config);
         }
     }
 
+    private Connector connector;
     private HikariDataSource dataSource;
 
-    private MySQLConnectorManager(HikariConfig config) {
+    private PooledConnectorManager(Connector connector, HikariConfig config) {
+        this.connector = connector;
         dataSource = new HikariDataSource(config);
     }
 
     @Override
-    public Connector getConnector() throws SQLException {
-        return new MySQLConnector(dataSource.getConnection());
+    public Connector establishConnection() throws SQLException {
+        connector.setConnection(dataSource.getConnection());
+        return connector;
     }
 }

@@ -11,8 +11,10 @@ import web_app.common.Utils;
 import web_app.repository.DataRepository;
 import web_app.repository.cache.cache_managers.CacheManager;
 import web_app.repository.cache.cache_managers.MemcachedManager;
+import web_app.repository.db.db_connectors.MySQLConnector;
 import web_app.repository.db.db_managers.ConnectorManager;
-import web_app.repository.db.db_managers.MySQLConnectorManager;
+import web_app.repository.db.db_managers.NonPooledConnectorManager;
+import web_app.repository.db.db_managers.PooledConnectorManager;
 import web_app.repository.repository_types.CachedRepository;
 import web_app.repository.repository_types.NonCachedRepository;
 import web_app.repository.repository_types.Repository;
@@ -107,35 +109,56 @@ public class BaseServlet extends HttpServlet {
     private ConnectorManager getConnectorManager(@NotNull Properties properties) throws SQLException {
         DriverManager.registerDriver(new Driver());
 
-        MySQLConnectorManager.Builder builder = new MySQLConnectorManager.Builder()
+        String usePool = properties.getProperty(Constants.JDBC_USE_CONNECTION_POOL);
+
+        if (usePool.equalsIgnoreCase(Constants.USE_POOL_VALUE)) {
+
+            PooledConnectorManager.Builder builder = new PooledConnectorManager.Builder(new MySQLConnector())
+                    .setUrl(properties.getProperty(Constants.JDBC_URL))
+                    .setUsername(properties.getProperty(Constants.JDBC_USER))
+                    .setPassword(properties.getProperty(Constants.JDBC_PASSWORD))
+                    .setConnectionTestQuery(properties.getProperty(Constants.JDBC_CONNECTION_TEXT_QUERY))
+                    .setPoolName(properties.getProperty(Constants.JDBC_POOL_NAME));
+            try {
+                builder.setLeakDetectionThreshold(Integer.parseInt(properties.getProperty(Constants.JDBC_LEAK_DETECTION_THRESHOLD)));
+            } catch (NumberFormatException ex) {
+                logger.error("can't set {} parameter, used default value", Constants.JDBC_LEAK_DETECTION_THRESHOLD);
+            }
+
+            try {
+                builder.setMaximumPoolSize(Integer.parseInt(properties.getProperty(Constants.JDBC_MAXIMUM_POOL_SIZE)));
+            } catch (NumberFormatException ex) {
+                logger.error("can't set {} parameter, used default value", Constants.JDBC_MAXIMUM_POOL_SIZE);
+            }
+
+            try {
+                builder.setMinimumIdle(Integer.parseInt(properties.getProperty(Constants.JDBC_MINIMUM_IDLE)));
+            } catch (NumberFormatException ex) {
+                logger.error("can't set {} parameter, used default value", Constants.JDBC_LEAK_DETECTION_THRESHOLD);
+            }
+
+            for (Object obj : properties.keySet()) {
+                if (obj instanceof String) {
+                    String key = (String) obj;
+                    if (key.startsWith(Constants.JDBC_PARAM_PREFIX)) {
+                        builder.addSourceProperty(key.replace(Constants.JDBC_PARAM_PREFIX, ""), properties.getProperty(key));
+                    }
+                }
+            }
+
+            return builder.build();
+        }
+
+        NonPooledConnectorManager.Builder builder = new NonPooledConnectorManager.Builder(new MySQLConnector())
                 .setUrl(properties.getProperty(Constants.JDBC_URL))
                 .setUsername(properties.getProperty(Constants.JDBC_USER))
-                .setPassword(properties.getProperty(Constants.JDBC_PASSWORD))
-                .setConnectionTestQuery(properties.getProperty(Constants.JDBC_CONNECTION_TEXT_QUERY))
-                .setPoolName(properties.getProperty(Constants.JDBC_POOL_NAME));
-        try {
-            builder.setLeakDetectionThreshold(Integer.parseInt(properties.getProperty(Constants.JDBC_LEAK_DETECTION_THRESHOLD)));
-        } catch (NumberFormatException ex) {
-            logger.error("can't set {} parameter, used default value", Constants.JDBC_LEAK_DETECTION_THRESHOLD);
-        }
-
-        try {
-            builder.setMaximumPoolSize(Integer.parseInt(properties.getProperty(Constants.JDBC_MAXIMUM_POOL_SIZE)));
-        } catch (NumberFormatException ex) {
-            logger.error("can't set {} parameter, used default value", Constants.JDBC_MAXIMUM_POOL_SIZE);
-        }
-
-        try {
-            builder.setMinimumIdle(Integer.parseInt(properties.getProperty(Constants.JDBC_MINIMUM_IDLE)));
-        } catch (NumberFormatException ex) {
-            logger.error("can't set {} parameter, used default value", Constants.JDBC_LEAK_DETECTION_THRESHOLD);
-        }
+                .setPassword(properties.getProperty(Constants.JDBC_PASSWORD));
 
         for (Object obj : properties.keySet()) {
             if (obj instanceof String) {
                 String key = (String) obj;
-                if (key.startsWith("dataSource.")) {
-                    builder.addSourceProperty(key, properties.getProperty(key));
+                if (key.startsWith(Constants.JDBC_PARAM_PREFIX)) {
+                    builder.setCustomParameter(key.replace(Constants.JDBC_PARAM_PREFIX, ""), properties.getProperty(key));
                 }
             }
         }
