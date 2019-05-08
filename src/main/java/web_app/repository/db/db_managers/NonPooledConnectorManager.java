@@ -1,7 +1,6 @@
 package web_app.repository.db.db_managers;
 
 import web_app.repository.db.db_connectors.Connector;
-import web_app.repository.db.db_connectors.MySQLConnector;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;

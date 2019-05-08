@@ -19,7 +19,7 @@ public class MySQLConnector implements Connector {
     private Connection connection;
 
     @Override
-    public void setConnection(Connection connection) {
+    public void setConnection(@NotNull Connection connection) {
         this.connection = connection;
     }
 
