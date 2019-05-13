@@ -57,7 +57,7 @@ public class EnqueueJobServletTest extends Mockito {
             servlet.doPost(request, response);
 
             logger.info("-------------------------------------------------------------");
-            logger.info("row with id = {} inserted for value = {}", valueId, value);
+            logger.info("value = {} inserted with id = {}", value, valueId);
             logger.info("-------------------------------------------------------------");
         }
     }
