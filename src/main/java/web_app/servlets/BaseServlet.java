@@ -21,14 +21,19 @@ import web_app.repository.repository_types.Repository;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.logging.Level;
 
 public class BaseServlet extends HttpServlet {
+
+    static {
+        System.setProperty("net.spy.log.LoggerImpl",
+                "net.spy.memcached.compat.log.SunLogger");
+        java.util.logging.Logger.getLogger("net.spy.memcached").setLevel(Level.OFF);
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(BaseServlet.class);
 
@@ -43,7 +48,6 @@ public class BaseServlet extends HttpServlet {
             initDataRepository(configFile);
 
             saveConfigPropertiesInContext(configFile);
-
         } catch (IOException ex) {
             logger.error("Config file {} not found.",
                     System.getenv(getServletContext().getInitParameter(Constants.ENV_VAR_NAME)), ex);

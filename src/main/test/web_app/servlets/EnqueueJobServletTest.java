@@ -39,19 +39,22 @@ public class EnqueueJobServletTest extends Mockito {
     @Mock
     RequestDispatcher dispatcher;
 
+    private JobResultServletTest resultServletTest = new JobResultServletTest();
+
     private HashMap <String, Object> hashMap = new HashMap<>();
     private Integer valueId;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        setMainRules();
     }
 
     @Test
     public void testDoPost() throws ServletException, IOException {
-        setMainRules();
         EnqueueJobServlet servlet = initServlet();
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 1; ++i) {
             int value = generateValue(99999);
             setFormParam(value);
             servlet.doPost(request, response);
@@ -60,6 +63,33 @@ public class EnqueueJobServletTest extends Mockito {
             logger.info("value = {} inserted with id = {}", value, valueId);
             logger.info("-------------------------------------------------------------");
         }
+    }
+
+    @Test
+    public void testBothServlets() throws ServletException, IOException, InterruptedException {
+        EnqueueJobServlet servlet = initServlet();
+        resultServletTest.setUp();
+
+        long start = System.currentTimeMillis();
+
+        for (int i = 0; i < 100; ++i) {
+            int value = generateValue(99999);
+            setFormParam(value);
+            servlet.doPost(request, response);
+
+            // logger.info("-------------------------------------------------------------");
+            // logger.info("value = {} inserted with id = {}", value, valueId);
+
+            resultServletTest.setRuleForGettingValueId(valueId);
+            resultServletTest.testDoGet();
+
+            // logger.info("prime numbers  = {}", resultServletTest.getPrimeNumbers());
+            // logger.info("-------------------------------------------------------------");
+        }
+
+        long end = System.currentTimeMillis();
+
+        System.out.println(String.format("spent time: %d", end - start));
     }
 
     private int generateValue(int maxVal) {

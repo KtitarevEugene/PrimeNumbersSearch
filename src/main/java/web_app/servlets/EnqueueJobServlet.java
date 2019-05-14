@@ -56,8 +56,12 @@ public class EnqueueJobServlet extends BaseServlet {
                 List<ResultModel> resultModels = getResultByValue(value);
 
                 if (resultModels != null && !resultModels.isEmpty()) {
-                    req.setAttribute(Constants.VALUE_ID_ATTRIBUTE_NAME, resultModels.get(0).getId());
+                    List<Integer> primeNumbers = resultModels.get(0).getPrimeNumbers();
+                    if (primeNumbers == null) {
+                        sendResultMessage(resultModels.get(0).getId());
+                    }
 
+                    req.setAttribute(Constants.VALUE_ID_ATTRIBUTE_NAME, resultModels.get(0).getId());
                 } else {
                     int valueId = insertValueToSearch(value);
 
