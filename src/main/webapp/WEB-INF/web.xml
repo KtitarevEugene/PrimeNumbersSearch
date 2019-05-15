@@ -6,11 +6,6 @@
   <display-name>Archetype Created Web Application</display-name>
 
   <context-param>
-    <param-name>log4j</param-name>
-    <param-value>WEB-INF/log4j/log4j.xml</param-value>
-  </context-param>
-
-  <context-param>
     <param-name>ENV_VAR_NAME</param-name>
     <param-value>WebCfgPath</param-value>
   </context-param>
