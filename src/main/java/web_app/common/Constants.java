@@ -1,5 +1,7 @@
 package web_app.common;
 
+import java.util.logging.Level;
+
 public class Constants {
 
     public static final String ENV_VAR_NAME = "ENV_VAR_NAME";
@@ -28,6 +30,17 @@ public class Constants {
     public static final String CACHE_PORT = "port";
     public static final String CACHE_EXPIRATION_TIME = "expiration_time";
     public static final String CACHE_TIMEOUT = "timeout";
+    public static final String CACHE_LOG_LEVEL = "log_level";
+
+    public static final String LOG_LEVEL_OFF = "OFF";
+    public static final String LOG_LEVEL_SEVERE = "SEVERE";
+    public static final String LOG_LEVEL_WARNING = "WARNING";
+    public static final String LOG_LEVEL_INFO = "INFO";
+    public static final String LOG_LEVEL_CONFIG = "CONFIG";
+    public static final String LOG_LEVEL_FINE = "FINE";
+    public static final String LOG_LEVEL_FINER = "FINER";
+    public static final String LOG_LEVEL_FINEST = "FINEST";
+    public static final String LOG_LEVEL_ALL = "ALL";
 
     public static final String USE_CACHE_VALUE = "true";
     public static final String USE_POOL_VALUE = "true";

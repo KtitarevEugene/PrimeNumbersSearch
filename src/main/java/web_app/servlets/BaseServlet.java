@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import web_app.common.Constants;
 import web_app.common.Utils;
 import web_app.repository.DataRepository;
+import web_app.repository.cache.cache_connectors.MemcachedConnector;
 import web_app.repository.cache.cache_managers.CacheManager;
 import web_app.repository.cache.cache_managers.MemcachedManager;
 import web_app.repository.db.db_connectors.MySQLConnector;
@@ -25,15 +26,8 @@ import java.io.*;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.logging.Level;
 
 public class BaseServlet extends HttpServlet {
-
-    static {
-        System.setProperty("net.spy.log.LoggerImpl",
-                "net.spy.memcached.compat.log.SunLogger");
-        java.util.logging.Logger.getLogger("net.spy.memcached").setLevel(Level.OFF);
-    }
 
     private static final Logger logger = LoggerFactory.getLogger(BaseServlet.class);
 
@@ -97,6 +91,7 @@ public class BaseServlet extends HttpServlet {
                     .setPort(Integer.parseInt(cacheProps.getProperty(Constants.CACHE_PORT)))
                     .setOperationTimeoutMillis(Integer.parseInt(cacheProps.getProperty(Constants.CACHE_TIMEOUT)))
                     .setExpirationTimeMillis(Integer.parseInt(cacheProps.getProperty(Constants.CACHE_EXPIRATION_TIME)))
+                    .setLogLevel(getLogLevelValue(cacheProps.getProperty(Constants.CACHE_LOG_LEVEL)))
                     .build();
 
             return new CachedRepository(
@@ -107,6 +102,19 @@ public class BaseServlet extends HttpServlet {
         return new NonCachedRepository(
                 getConnectorManager(jdbcProps));
 
+    }
+
+    private MemcachedConnector.LogLevel getLogLevelValue(String logLevel) {
+
+        MemcachedConnector.LogLevel level = MemcachedConnector.LogLevel.SEVERE;
+
+        try {
+            level = MemcachedConnector.LogLevel.valueOf(logLevel.toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException ex) {
+            logger.error("'log_level' property is wrong or not specified, used default value.");
+        }
+
+        return level;
     }
 
     @NotNull
