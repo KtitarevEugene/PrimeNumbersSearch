@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web_app.common.Constants;
 import web_app.common.Utils;
-import web_app.models.ValueModel;
+import web_app.models.SendResponseModel;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,46 +22,56 @@ public class EnqueueJobServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(EnqueueJobServlet.class);
 
     @Override
-    public void init() throws ServletException {
-        super.init();
-    }
-
-    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         forwardToForm(req, resp);
     }
 
     @Override
     protected void doPost(@NotNull HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String value = req.getParameter(Constants.VALUE_FIELD);
-        if (Utils.isInteger(value)) {
+        try {
+            int value = Integer.parseInt(req.getParameter(Constants.VALUE_FIELD));
 
-            ValueModel valueModel = sendRequestToRestApi(Integer.parseInt(value));
-            req.setAttribute(Constants.VALUE_ID_ATTRIBUTE_NAME, valueModel.getId());
+            SendResponseModel responseModel = sendRequestToRestApi(value);
 
+            if (responseModel.getData() != null) {
+                forwardToForm(req, resp, responseModel);
+            } else {
+                forwardToErrorPage(req, resp, responseModel);
+            }
+
+        } catch (NumberFormatException ex) {
+
+            forwardToForm(req, resp);
         }
+    }
+
+    private void forwardToForm(@NotNull HttpServletRequest req, @NotNull HttpServletResponse resp, @NotNull SendResponseModel model) throws ServletException, IOException {
+        req.setAttribute(Constants.VALUE_ID_ATTRIBUTE_NAME, model.getData().getId());
 
         forwardToForm(req, resp);
     }
 
-    private void forwardToForm(@NotNull HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void forwardToForm(@NotNull HttpServletRequest req, @NotNull HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute(Constants.VALUE_ATTRIBUTE_NAME, Constants.VALUE_FIELD);
 
         getServletContext().getRequestDispatcher("/form.jsp").forward(req, resp);
     }
 
-    private ValueModel sendRequestToRestApi(int value) {
-        ValueModel valueModel = null;
+    private void forwardToErrorPage(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    SendResponseModel model) throws ServletException, IOException {
+        request.setAttribute(Constants.ERROR_TEXT_ATTRIBUTE_NAME, model.getReasonPrase());
+
+        getServletContext().getRequestDispatcher("/error.jsp").forward(request, response);
+    }
+
+    private SendResponseModel sendRequestToRestApi(int value) {
         Client client = Client.create();
 
         WebResource resource = client.resource(String.format("http://localhost:8080/PrimeNumbersRestService/services/numbers/send/%d", value));
 
-        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).put(ClientResponse.class);
 
-        if (response.getStatus() == ClientResponse.Status.OK.getStatusCode()) {
-            valueModel = response.getEntity(ValueModel.class);
-        }
-
-        return valueModel;
+        return response.getEntity(SendResponseModel.class);
     }
 }
