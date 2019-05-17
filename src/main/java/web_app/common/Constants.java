@@ -12,4 +12,6 @@ public class Constants {
     public static final String REQUESTED_VALUE_ATTRIBUTE_NAME = "requested_value";
     public static final String VALUE_RESULT_ATTRIBUTE_NAME = "value_result_attribute_name";
     public static final String CONFIG_PROPERTIES_ATTRIBUTE_NAME = "config_properties_attribute_name";
+
+    public static final String ERROR_TEXT_ATTRIBUTE_NAME = "error_text";
 }
